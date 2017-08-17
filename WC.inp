@@ -1,0 +1,50 @@
+TITLE: Wu and Carroll selection model;
+
+DATA:
+  FILE IS dataSC4MatheWIDE.csv;
+  FORMAT IS FREE;
+  TYPE IS INDIVIDUAL;
+
+VARIABLE:
+  NAMES ARE pid iid dgcf sc sex hs rs rest mig amode age math1 math2 drop;
+  USEVARIABLES ARE dgcf sc sex hs rs rest mig amode age math1 math2 d2;
+  MISSING ARE .;
+  CLUSTER IS iid;
+  WITHIN ARE  dgcf sc sex mig age amode hs rs rest;
+  CATEGORICAL are d2;
+ 
+DATA MISSING:
+  NAMES = math1 math2;
+  TYPE = SDROPOUT;
+  BINARY = d2;
+
+ANALYSIS:
+   TYPE = TWOLEVEL;
+   ESTIMATOR = MLF;
+   ALGORITHM INTEGRATION;
+   INTEGRATION = MONTECARLO;
+   PROCESSORS = 2;
+   MITERATIONS = 1000;
+
+MODEL:
+
+  %WITHIN%
+  iw BY math1-math2@1;     ! latent intercept 
+  sw BY math1@0 math2@1;   ! latent slope
+  sw@0;                    ! no random slope
+  iw WITH sw@0;            ! no correlation between intercept and slope
+  math1-math2 (1);         ! equal residual variance (= mixed-effects model)         
+  iw ON dgcf sc;
+  sw ON dgcf sc;           ! interaction with time
+ 
+  d2 ON iw dgcf sc sex mig age amode hs rs rest;
+
+  %BETWEEN%
+  ib BY math1-math2@1;     ! latent intercept
+  sb BY math1@0 math2@1;   ! latent slope
+  sb@0;                    ! (no) random slope
+  ib WITH sb@0;            ! no correlation between intercept and slope
+  math1-math2@0;           !   
+  [ib sb math1@0 math2@0]; ! no item-level intercept, but latent means
+
+OUTPUT: TECH1 CINTERVAL;

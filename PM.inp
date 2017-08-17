@@ -1,0 +1,61 @@
+TITLE: Roy pattern mixture model;
+
+DATA:
+  FILE IS dataSC4MatheWIDE.csv;
+  FORMAT IS FREE;
+  TYPE IS INDIVIDUAL;
+
+VARIABLE:
+  NAMES ARE pid iid dgcf sc sex hs rs rest mig amode age math1 math2 drop;
+  USEVARIABLES ARE dgcf sc math1 math2;
+  MISSING ARE .;
+  CLUSTER IS iid;
+  WITHIN ARE dgcf sc;
+  CLASSES = c(2);
+  KNOWNCLASS = c(drop = 0 drop = 1);
+  
+ANALYSIS:
+   TYPE = TWOLEVEL MIXTURE;
+   ESTIMATOR = ML;
+   !ALGORITHM = INTEGRATION;
+   !INTEGRATION = MONTECARLO;
+   !PROCESSORS = 2;
+
+MODEL:
+
+  %WITHIN%
+  %OVERALL%
+  iw BY math1-math2@1;     ! latent intercept 
+  sw BY math1@0 math2@1;   ! latent slope
+  sw@0;                    ! no(!) random slope
+  iw WITH sw@0;            ! no correlation between intercept and slope
+  math1-math2 (resvar);    ! equal residual variance (= mixed-effects model)
+  iw ON dgcf sc;
+  sw ON dgcf sc;
+  [c#1] (p1logit);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+  %c#1%
+  iw ON dgcf sc;
+  sw ON dgcf sc;
+
+  %c#2%
+  iw ON dgcf sc;
+  sw ON dgcf@0 sc@0;
+
+  %BETWEEN%
+  %OVERALL%
+  ib BY math1-math2@1;     ! latent intercept
+  sb BY math1@0 math2@1;   ! latent slope
+  sb@0;                    ! (no) random slope
+  ib WITH sb@0;            ! no correlation between intercept and slope
+  math1-math2@0;           !   
+  [ib sb math1@0 math2@0]; ! no item-level intercept, but latent means
+
+  %c#1%
+  [ib sb] (icept1 linear1);
+
+  %c#2%
+  [ib sb@0] (icept2 linear2);
+
+
+OUTPUT: TECH1 CINTERVAL;
