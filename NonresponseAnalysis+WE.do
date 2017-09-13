@@ -35,10 +35,7 @@ recode dr (0 = 1) (1 = 0), gen(tn)
 
 // nonresponse analysis
 gen sqmath = math1^2
-xtmelogit tn math1 sqmath amode dgcf sc sex mig age HS RS REST || ID_i:
-
-predict re*, reffects // obtain the random effects
-// only for 85% of the schools
+xtmelogit dr math1 sqmath amode dgcf sc sex mig age HS RS REST || ID_i:
 
 // create weights: only fixed effects
 xtmelogit tn math1 sqmath amode dgcf sc sex mig age HS RS REST, noconstant || ID_i:
