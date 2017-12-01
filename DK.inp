@@ -36,7 +36,7 @@ MODEL:
   iw ON dgcf sc;
   sw ON dgcf sc;           ! interaction with time
  
-  d2 ON dgcf sc sex mig age amode hs rs rest;
+  d2 ON dgcf sc sex mig age amode hs rs rest math1 math2;
 
   %BETWEEN%
   ib BY math1-math2@1;     ! latent intercept
