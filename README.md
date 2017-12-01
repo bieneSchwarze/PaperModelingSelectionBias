@@ -4,7 +4,7 @@ This material belongs to the paper draft "Modeling Competence Development in the
 
 It contains the source code of statistical software used to conduct sensitivity analyses when dealing with missing data in longitudinal and multilevel modeling. Concretely, the competence development of German adolescents is modelled. 
 
-The following models have been estimated: listwise deletion LWD, full information maximum likelihood FIML, weighted regression with inverse probabiltiy weights WE, mltivariate imputation via chained equations MI, Diggle-Kenward model DK, Wu-Carrol model WC, and Roy pattern mixture model PM.
+The following models have been estimated: listwise deletion LWD, full information maximum likelihood FIML, weighted regression with inverse probabiltiy weights WE, mltivariate imputation via chained equations MI, Diggle-Kenward model DK, Wu-Carrol model WC, and Pattern mixture model PM (by Little).
 
 The programs in this repository are named as follows:
 Data preparation and description:	Prepare+describeData.r	(R file),
